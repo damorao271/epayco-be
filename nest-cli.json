@@ -1,8 +1,41 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/epayco-be/src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/epayco-be/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/epayco-be",
+  "projects": {
+    "epayco-be": {
+      "type": "application",
+      "root": "apps/epayco-be",
+      "entryFile": "main",
+      "sourceRoot": "apps/epayco-be/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/epayco-be/tsconfig.app.json"
+      }
+    },
+    "wallet-api-service": {
+      "type": "application",
+      "root": "apps/wallet-api-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/wallet-api-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/wallet-api-service/tsconfig.app.json"
+      }
+    },
+    "wallet-db-service": {
+      "type": "application",
+      "root": "apps/wallet-db-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/wallet-db-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/wallet-db-service/tsconfig.app.json"
+      }
+    }
   }
 }
