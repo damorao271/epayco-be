@@ -3,9 +3,9 @@ services:
   wallet-api-service:
     build:
       context: .
-      dockerfile: Dockerfile
       args:
         APP_NAME: wallet-api-service
+    command: ["node", "dist/apps/wallet-api-service/main.js"]
     ports:
       - "${PORT_WALLET_API:-3001}:3000"
     env_file:
@@ -14,9 +14,9 @@ services:
   wallet-db-service:
     build:
       context: .
-      dockerfile: Dockerfile
       args:
         APP_NAME: wallet-db-service
+    command: ["node", "dist/apps/wallet-db-service/main.js"]
     ports:
       - "${PORT_WALLET_DB:-3002}:3000"
     env_file:
