@@ -1,26 +1,52 @@
-import { Injectable } from '@nestjs/common';
-import { CreateWalletDto } from './dto/create-wallet.dto';
-import { UpdateWalletDto } from './dto/update-wallet.dto';
+import { Injectable, BadRequestException } from '@nestjs/common';
+// import { InjectRepository } from '@nestjs/typeorm';
+import {
+  //  Repository,
+  Connection,
+} from 'typeorm';
+import { Client } from './entities/client.entity';
+import { Wallet } from './entities/wallet.entity';
 
 @Injectable()
 export class WalletService {
-  create(createWalletDto: CreateWalletDto) {
-    return 'This action adds a new wallet';
-  }
+  constructor(
+    // @InjectRepository(Client)
+    // private clientRepository: Repository<Client>,
+    // @InjectRepository(Wallet)
+    // private walletRepository: Repository<Wallet>,
+    private connection: Connection, // For transaction management
+  ) {}
 
-  findAll() {
-    return `This action returns all wallet`;
-  }
+  // 1. Register Client
+  async createClient(data: any): Promise<Client> {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-  findOne(id: number) {
-    return `This action returns a #${id} wallet`;
-  }
+    try {
+      const newClient = queryRunner.manager.create(Client, data);
+      const savedClient = await queryRunner.manager.save(newClient);
 
-  update(id: number, updateWalletDto: UpdateWalletDto) {
-    return `This action updates a #${id} wallet`;
-  }
+      // Create the associated wallet with a balance of 0
+      const newWallet = queryRunner.manager.create(Wallet, {
+        client: savedClient,
+        balance: 0,
+      });
+      await queryRunner.manager.save(newWallet);
 
-  remove(id: number) {
-    return `This action removes a #${id} wallet`;
+      await queryRunner.commitTransaction();
+      return savedClient;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      // Handling TypeORM duplication errors (e.g., document, email)
+      if (error.code === '23505' || error.code === 'ER_DUP_ENTRY') {
+        throw new BadRequestException(
+          'The document or email are already registered.',
+        );
+      }
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
