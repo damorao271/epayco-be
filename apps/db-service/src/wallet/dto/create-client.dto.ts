@@ -6,6 +6,7 @@ import {
   Matches,
   IsOptional,
 } from 'class-validator';
+import { phoneRegex, documentRegex } from '../../utils/regex';
 
 export class CreateClientDto {
   @IsOptional()
@@ -14,6 +15,7 @@ export class CreateClientDto {
 
   @IsString()
   @IsNotEmpty()
+  @Matches(documentRegex, { message: 'Document must be a valid ID' })
   document: string;
 
   @IsString()
@@ -26,6 +28,6 @@ export class CreateClientDto {
 
   @IsString()
   @IsNotEmpty()
-  @Matches(/^\d{10}$/, { message: 'Phone must be a 10-digit number' })
+  @Matches(phoneRegex, { message: 'Phone must be a 10-digit number' })
   phone: string;
 }

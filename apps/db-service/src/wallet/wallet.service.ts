@@ -1,19 +1,20 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
 import {
-  //  Repository,
-  Connection,
-} from 'typeorm';
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Connection } from 'typeorm';
 import { Client } from './entities/client.entity';
 import { Wallet } from './entities/wallet.entity';
 
 @Injectable()
 export class WalletService {
   constructor(
-    // @InjectRepository(Client)
-    // private clientRepository: Repository<Client>,
-    // @InjectRepository(Wallet)
-    // private walletRepository: Repository<Wallet>,
+    @InjectRepository(Client)
+    private clientRepository: Repository<Client>,
+    @InjectRepository(Wallet)
+    private walletRepository: Repository<Wallet>,
     private connection: Connection, // For transaction management
   ) {}
 
@@ -48,5 +49,40 @@ export class WalletService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  // 2. Recharge Wallet
+  async rechargeBalance(
+    document: string,
+    phone: string,
+    amount: number,
+  ): Promise<Wallet | null> {
+    const client = await this.clientRepository.findOne({
+      where: { document, phone },
+      relations: ['wallet'],
+    });
+
+    if (!client) {
+      throw new NotFoundException('Client not found or incorrect credentials.');
+    }
+
+    // Ensure concurrency with lock (SELECT FOR UPDATE)
+    const result = await this.walletRepository
+      .createQueryBuilder()
+      .update(Wallet)
+      .set({ balance: () => `balance + ${amount}` })
+      .where('id = :walletId', { walletId: client.wallet.id })
+      .execute();
+
+    if (result.affected === 0) {
+      throw new BadRequestException('Could not update the balance.');
+    }
+
+    // Returns the updated wallet (needs to be reloaded from the DB)
+    let wallet = await this.walletRepository.findOne({
+      where: { id: client.wallet.id },
+      relations: ['client'],
+    });
+    return wallet;
   }
 }
