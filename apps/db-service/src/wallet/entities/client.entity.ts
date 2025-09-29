@@ -12,11 +12,11 @@ export class Client {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  discount: number; // Requerido
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0 })
+  discount?: number;
 
   @Column()
-  document: string; // Requerido
+  document: string; // Required
 
   @Column()
   name: string; // Requerido
