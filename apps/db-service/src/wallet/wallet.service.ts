@@ -103,4 +103,40 @@ export class WalletService {
 
     return client.wallet.balance;
   }
+
+  // 4. Pay (Discount - Used in Confirmation)
+  async discountBalance(
+    document: string,
+    amount: number,
+  ): Promise<Wallet | null> {
+    const client = await this.clientRepository.findOne({
+      where: { document },
+      relations: ['wallet'],
+    });
+
+    if (!client) {
+      throw new NotFoundException('Client not found.');
+    }
+
+    // Validate balance (Although the main validation is in the Business Service,
+    // a final check is done before the atomic operation).
+    if (client.wallet.balance < amount) {
+      throw new BadRequestException('Insufficient balance for the purchase.');
+    }
+
+    // Atomic discount
+    const result = await this.walletRepository
+      .createQueryBuilder()
+      .update(Wallet)
+      .set({ balance: () => `balance - ${amount}` })
+      .where('id = :walletId', { walletId: client.wallet.id })
+      .execute();
+
+    if (result.affected === 0) {
+      throw new BadRequestException('Could not deduct the balance.');
+    }
+
+    // Returns the updated wallet
+    return client.wallet;
+  }
 }

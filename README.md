@@ -20,5 +20,7 @@ npm install
 4. Create and start the containers with
 
 ```
+docker-compose build
+
 docker-compose up
 ```

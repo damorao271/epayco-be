@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { WalletService } from './wallet.service';
-import { CreateClientDto, RechargeWalletDto } from './dto';
+import { CreateClientDto, RechargeWalletDto, DiscountBalanceDto } from './dto';
 // This controller is consumed ONLY by the Business Service
 @Controller('db-api/wallet')
 export class WalletController {
@@ -26,5 +26,10 @@ export class WalletController {
     @Query('phone') phone: string,
   ) {
     return this.walletService.getBalance(document, phone);
+  }
+
+  @Post('discount')
+  discount(@Body() data: DiscountBalanceDto) {
+    return this.walletService.discountBalance(data.document, data.amount);
   }
 }
