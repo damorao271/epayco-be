@@ -105,6 +105,7 @@ export class WalletService {
   }
 
   // 4. Pay (Discount - Used in Confirmation)
+  // Change this later for a 2 step discount with email send
   async discountBalance(
     document: string,
     amount: number,

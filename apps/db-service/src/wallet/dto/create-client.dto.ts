@@ -9,10 +9,6 @@ import {
 import { phoneRegex, documentRegex } from '../../utils/regex';
 
 export class CreateClientDto {
-  @IsOptional()
-  @IsNumber()
-  discount?: number;
-
   @IsString()
   @IsNotEmpty()
   @Matches(documentRegex, { message: 'Document must be a valid ID' })
