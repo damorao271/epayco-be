@@ -5,22 +5,26 @@ services:
       context: .
       args:
         APP_NAME: db-service
-    command: ["node", "dist/apps/db-service/main.js"]
+    command: ["npm", "run", "start:dev", "db-service"]
     ports:
       - "${PORT_WALLET_API:-3001}:3000"
     env_file:
       - .env
+    volumes:
+      - .:/app
 
   business-service:
     build:
       context: .
       args:
         APP_NAME: business-service
-    command: ["node", "dist/apps/business-service/main.js"]
+    command: ["npm", "run", "start:dev", "business-service"]
     ports:
       - "${PORT_WALLET_DB:-3002}:3000"
     env_file:
       - .env
+    volumes:
+      - .:/app
   mysql:
     image: mysql:8.0
     ports:
