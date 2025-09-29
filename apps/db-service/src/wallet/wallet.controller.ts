@@ -19,4 +19,12 @@ export class WalletController {
       data.amount,
     );
   }
+
+  @Get('balance')
+  getBalance(
+    @Query('document') document: string,
+    @Query('phone') phone: string,
+  ) {
+    return this.walletService.getBalance(document, phone);
+  }
 }

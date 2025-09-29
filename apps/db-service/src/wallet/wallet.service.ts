@@ -85,4 +85,22 @@ export class WalletService {
     });
     return wallet;
   }
+
+  // 3. Check Balance
+  async getBalance(document: string, phone: string): Promise<number> {
+    if (!document || !phone) {
+      throw new BadRequestException('Document and phone are required.');
+    }
+
+    const client = await this.clientRepository.findOne({
+      where: { document, phone },
+      relations: ['wallet'],
+    });
+
+    if (!client) {
+      throw new NotFoundException('Client not found or incorrect credentials.');
+    }
+
+    return client.wallet.balance;
+  }
 }
