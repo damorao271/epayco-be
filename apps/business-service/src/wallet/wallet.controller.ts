@@ -1,6 +1,11 @@
 import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { WalletService } from './wallet.service';
-import { RegisterClientDto, RechargeWalletDto } from './dto';
+import {
+  RegisterClientDto,
+  RechargeWalletDto,
+  PayDto,
+  ConfirmPayDto,
+} from './dto';
 
 // This controller is consumed by the Web Client (Frontend)
 @Controller('api/v1/wallet')
@@ -30,5 +35,21 @@ export class WalletController {
     @Query('phone') phone: string,
   ) {
     return this.walletService.checkBalance(document, phone);
+  }
+
+  // 4. Pay - Step 1: Generate Token
+  @Post('pay')
+  initiatePayment(@Body() data: PayDto) {
+    return this.walletService.initiatePayment(
+      data.document,
+      data.phone,
+      data.amount,
+    );
+  }
+
+  // 4. Pay - Step 2: Confirm
+  @Post('pay/confirm')
+  confirmPayment(@Body() data: ConfirmPayDto) {
+    return this.walletService.confirmPayment(data.sessionId, data.token);
   }
 }
