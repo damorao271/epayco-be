@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsEmail, IsString, IsPhoneNumber } from 'class-validator';
 
-export class RegistroClienteDto {
+export class RegisterClientDto {
   @IsNotEmpty()
   @IsString()
   document: string;
