@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
-import { documentRegex } from '../../utils/regex';
+import { documentRegex } from '../../../../../shared/regex';
 
 export class DiscountBalanceDto {
   @IsString()

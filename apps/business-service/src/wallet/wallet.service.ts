@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { ResponseDto, RegisterClientDto } from './dto';
@@ -34,6 +34,31 @@ export class WalletService {
       //   Handle DB Service errors (e.g., duplication 400)
       const dbError =
         error.response?.data?.message || 'Error registering the client.';
+      return this.buildResponse('400', dbError, null);
+    }
+  }
+
+  //   // 2. Recharge Wallet
+  async rechargeWallet(
+    document: string,
+    phone: string,
+    amount: number,
+  ): Promise<ResponseDto<any>> {
+    if (amount <= 0) {
+      throw new BadRequestException('The recharge value must be positive.');
+    }
+
+    try {
+      await lastValueFrom(
+        this.httpService.post(`${DB_SERVICE_URL}/recharge`, {
+          document,
+          phone,
+          amount,
+        }),
+      );
+      return this.buildResponse('200', 'Recharge successful.', amount);
+    } catch (error) {
+      const dbError = error.response?.data?.message || 'Recharge failed.';
       return this.buildResponse('400', dbError, null);
     }
   }

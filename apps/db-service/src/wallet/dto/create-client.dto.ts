@@ -6,7 +6,7 @@ import {
   Matches,
   IsOptional,
 } from 'class-validator';
-import { phoneRegex, documentRegex } from '../../utils/regex';
+import { phoneRegex, documentRegex } from '../../../../../shared/regex';
 
 export class CreateClientDto {
   @IsString()
