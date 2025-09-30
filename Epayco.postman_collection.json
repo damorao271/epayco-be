@@ -1,0 +1,412 @@
+{
+	"info": {
+		"_postman_id": "0cd12097-508f-471a-9976-916fa2c3d4d2",
+		"name": "Epayco",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12760318",
+		"_collection_link": "https://www.postman.com/epayco-1489/workspace/epayco/collection/12760318-0cd12097-508f-471a-9976-916fa2c3d4d2?action=share&source=collection_link&creator=12760318"
+	},
+	"item": [
+		{
+			"name": "DB Service",
+			"item": []
+		},
+		{
+			"name": "Business Service",
+			"item": [
+				{
+					"name": "Register Client",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function randomEmail() {",
+									"  const user = Math.random().toString(36).substring(2, 10);",
+									"  const domain = Math.random().toString(36).substring(2, 8);",
+									"  return `${user}@${domain}.com`;",
+									"}",
+									"",
+									"function randomDocument() {",
+									"  return Math.floor(1 + Math.random() * 50000000).toString();",
+									"}",
+									"",
+									"function randomPhone() {",
+									"  return Math.floor(1000000000 + Math.random() * 9000000000).toString();",
+									"}",
+									"",
+									"pm.request.body.raw = JSON.stringify({",
+									"  document: randomDocument(),",
+									"  name: \"John Doe s\",",
+									"  email: randomEmail(),",
+									"  phone: randomPhone(),",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/v1/wallet/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"v1",
+								"wallet",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recharge Wallet",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"document\":\"5711897\",\n    \"phone\":\"7989554453\",\n    \"amount\":12\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/v1/wallet/recharge",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"v1",
+								"wallet",
+								"recharge"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance ",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3002/api/v1/wallet/balance?document=5711897&phone=7989554453",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"v1",
+								"wallet",
+								"balance"
+							],
+							"query": [
+								{
+									"key": "document",
+									"value": "5711897"
+								},
+								{
+									"key": "phone",
+									"value": "7989554453"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"document\":\"5711897\",\n    \"phone\":\"7989554453\",\n    \"amount\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/v1/wallet/pay",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"v1",
+								"wallet",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Payment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sessionId\":\"19928286-14c6-4a0e-8bf3-5f6e21ee33a3\",\n    \"token\":\"938244\"    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/v1/wallet/pay/confirm",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"v1",
+								"wallet",
+								"pay",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Register Client",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function randomEmail() {",
+							"  const user = Math.random().toString(36).substring(2, 10);",
+							"  const domain = Math.random().toString(36).substring(2, 8);",
+							"  return `${user}@${domain}.com`;",
+							"}",
+							"",
+							"function randomDocument() {",
+							"  return Math.floor(1 + Math.random() * 50000000).toString();",
+							"}",
+							"",
+							"function randomPhone() {",
+							"  return Math.floor(1000000000 + Math.random() * 9000000000).toString();",
+							"}",
+							"",
+							"pm.request.body.raw = JSON.stringify({",
+							"  document: randomDocument(),",
+							"  name: \"John Doe s\",",
+							"  email: randomEmail(),",
+							"  phone: randomPhone(),",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/db-api/wallet/register-client",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"db-api",
+						"wallet",
+						"register-client"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Recharge Wallet",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"document\":\"3219749\",\n    \"phone\":\"9378089139\",\n    \"amount\":100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/db-api/wallet/recharge",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"db-api",
+						"wallet",
+						"recharge"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Balance",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3001/db-api/wallet/balance?phone=9378089139&document=3219749",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"db-api",
+						"wallet",
+						"balance"
+					],
+					"query": [
+						{
+							"key": "phone",
+							"value": "9378089139"
+						},
+						{
+							"key": "document",
+							"value": "3219749"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Discount Balance",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"document\":\"3219749\",\n    \"amount\":1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/db-api/wallet/discount",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"db-api",
+						"wallet",
+						"discount"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -207,7 +207,7 @@ export class WalletService {
       return this.buildResponse(
         '200',
         'Payment successful. Balance deducted.',
-        null,
+        sesion.amount,
       );
     } catch (error) {
       // This captures errors like 'Insufficient balance' that come from the DB Service
