@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsEmail, IsString, IsPhoneNumber } from 'class-validator';
+import { IsNotEmpty, IsEmail, IsString, Matches } from 'class-validator';
+import { phoneRegex } from '../../../../../shared/regex';
 
 export class RegisterClientDto {
   @IsNotEmpty()
@@ -14,6 +15,6 @@ export class RegisterClientDto {
   email: string;
 
   @IsNotEmpty()
-  @IsPhoneNumber('CO') // Asumiendo formato de celular colombiano o el que se necesite
+  @Matches(phoneRegex, { message: 'Phone must be a 10-digit number' })
   phone: string;
 }

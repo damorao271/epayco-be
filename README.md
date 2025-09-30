@@ -24,3 +24,5 @@ docker-compose build
 
 docker-compose up
 ```
+
+5. Whenever you make a payment Check for the emails in the SMTP server on your browser at [http://localhost:1080](http://localhost:1080)

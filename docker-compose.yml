@@ -1,4 +1,4 @@
-version: "3.8"
+# version key removed (obsolete)
 services:
   db-service:
     build:
@@ -36,5 +36,11 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:-password}
     volumes:
       - mysql_data:/var/lib/mysql
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "1080:1080" # Web UI
+      - "${SMTP_PORT:-1025}:1025" # SMTP server
+
 volumes:
   mysql_data:

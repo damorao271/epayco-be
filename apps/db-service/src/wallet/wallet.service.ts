@@ -8,6 +8,10 @@ import { Repository, Connection } from 'typeorm';
 import { Client } from './entities/client.entity';
 import { Wallet } from './entities/wallet.entity';
 
+interface DiscountResult {
+  wallet: Wallet;
+  email: string;
+}
 @Injectable()
 export class WalletService {
   constructor(
@@ -106,10 +110,11 @@ export class WalletService {
 
   // 4. Pay (Discount - Used in Confirmation)
   // Change this later for a 2 step discount with email send
+
   async discountBalance(
     document: string,
     amount: number,
-  ): Promise<Wallet | null> {
+  ): Promise<DiscountResult | null> {
     const client = await this.clientRepository.findOne({
       where: { document },
       relations: ['wallet'],
@@ -138,6 +143,19 @@ export class WalletService {
     }
 
     // Returns the updated wallet
-    return client.wallet;
+    return { wallet: client.wallet, email: client.email };
+  }
+
+  // 5. Get Email by Document
+  async getEmailByDocument(document: string): Promise<string | null> {
+    const client = await this.clientRepository.findOne({
+      where: { document },
+    });
+
+    if (!client) {
+      throw new NotFoundException('Client not found.');
+    }
+
+    return client.email;
   }
 }

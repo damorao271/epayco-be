@@ -32,4 +32,9 @@ export class WalletController {
   discount(@Body() data: DiscountBalanceDto) {
     return this.walletService.discountBalance(data.document, data.amount);
   }
+
+  @Get('email')
+  getEmail(@Query('document') document: string) {
+    return this.walletService.getEmailByDocument(document);
+  }
 }

@@ -2,14 +2,9 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { ResponseDto, RegisterClientDto } from './dto';
-
-interface PaymentSession {
-  sessionId: string;
-  document: string;
-  amount: number;
-  token_confirm: string;
-  expirationDate: Date;
-}
+import * as nodemailer from 'nodemailer';
+import { PaymentSession } from '../interfaces/paymentSession';
+import { ConfigService } from '@nestjs/config';
 
 // Interface for the payment session cache (simulated)
 const sessionCache = new Map<string, PaymentSession>();
@@ -17,8 +12,18 @@ const DB_SERVICE_URL = `http://db-service:3000/db-api/wallet`; // Assumes the DB
 
 @Injectable()
 export class WalletService {
-  constructor(private httpService: HttpService) {}
+  private transporter: nodemailer.Transporter;
 
+  constructor(
+    private httpService: HttpService,
+    private configService: ConfigService,
+  ) {
+    this.transporter = nodemailer.createTransport({
+      host: this.configService.get<string>('SMTP_HOST'),
+      port: Number(this.configService.get<string>('SMTP_PORT')),
+      ignoreTLS: true,
+    });
+  }
   // Utility for standard response
   private buildResponse<T>(
     code: string,
@@ -33,6 +38,7 @@ export class WalletService {
       const response = await lastValueFrom(
         this.httpService.post(`${DB_SERVICE_URL}/register-client`, data),
       );
+
       return this.buildResponse(
         '200',
         'Cliente registrado exitosamente.',
@@ -89,7 +95,7 @@ export class WalletService {
     } catch (error) {
       const dbError =
         error.response?.data?.message || 'Error checking balance.';
-      return this.buildResponse('404', dbError, null);
+      return this.buildResponse('404', dbError, { balance: 0 });
     }
   }
 
@@ -109,7 +115,7 @@ export class WalletService {
       return this.buildResponse(
         '403',
         'Insufficient balance to make the payment.',
-        null,
+        { sessionId: '' },
       );
     }
 
@@ -127,16 +133,38 @@ export class WalletService {
     };
     sessionCache.set(sessionId, sesion);
 
-    // SIMULATE EMAIL SENDING:
-    console.log(
-      `[SIMULATED EMAIL]: Token ${token_confirm} sent to the user's email with document ${document}.`,
-    );
+    // Get the user's email from the database
+    let email: string;
+    try {
+      const response = await lastValueFrom(
+        this.httpService.get(`${DB_SERVICE_URL}/email`, {
+          params: { document: document },
+        }),
+      );
+      email = response?.data;
+      if (!email) {
+        return this.buildResponse('404', 'Email not found for this user.', {
+          sessionId: '',
+        });
+      }
 
-    return this.buildResponse(
-      '200',
-      'Confirmation token sent to email. Use the session ID to confirm the purchase.',
-      { sessionId },
-    );
+      await this.transporter.sendMail({
+        from: 'noreply@epayco.com',
+        to: email,
+        subject: 'Payment Token',
+        text: `Hello from Epayco Your confirmation token is ${token_confirm}.`,
+      });
+
+      return this.buildResponse(
+        '200',
+        'Confirmation token sent to email. Use the session ID to confirm the purchase.',
+        { sessionId },
+      );
+    } catch (error) {
+      const dbError =
+        error.response?.data?.message || 'Error retrieving email.';
+      return this.buildResponse('404', dbError, { sessionId: '' });
+    }
   }
 
   async confirmPayment(
@@ -168,7 +196,7 @@ export class WalletService {
 
     // Logic to deduct the balance, consuming the DB Service
     try {
-      await lastValueFrom(
+      const res = await lastValueFrom(
         this.httpService.post(`${DB_SERVICE_URL}/discount`, {
           document: sesion.document,
           amount: sesion.amount,
