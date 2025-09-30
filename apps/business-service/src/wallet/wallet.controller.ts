@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { RegisterClientDto, RechargeWalletDto } from './dto';
 
@@ -21,5 +21,14 @@ export class WalletController {
       data.phone,
       data.amount,
     );
+  }
+
+  // 3. Check Balance
+  @Get('balance')
+  getBalance(
+    @Query('document') document: string,
+    @Query('phone') phone: string,
+  ) {
+    return this.walletService.checkBalance(document, phone);
   }
 }

@@ -62,4 +62,28 @@ export class WalletService {
       return this.buildResponse('400', dbError, null);
     }
   }
+
+  //   // 4. Check Balance
+  async checkBalance(
+    document: string,
+    phone: string,
+  ): Promise<ResponseDto<{ balance: number }>> {
+    try {
+      const response = await lastValueFrom(
+        this.httpService.get(`${DB_SERVICE_URL}/balance`, {
+          params: { document, phone },
+        }),
+      );
+      const balance = response?.data;
+
+      return this.buildResponse('200', 'Balance inquiry successful.', {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        balance,
+      });
+    } catch (error) {
+      const dbError =
+        error.response?.data?.message || 'Error checking balance.';
+      return this.buildResponse('404', dbError, null);
+    }
+  }
 }
