@@ -7,7 +7,7 @@
 
 ## Epayco Test: Daniel Morao Nishimura
 
-This is the repository for the Epayco test project, to run the file:
+This is the repository for the Epayco test Backend project, to run the repo:
 
 1. Clone the project
 2. Install the dependencies using
